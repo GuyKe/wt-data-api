@@ -2,7 +2,9 @@ package com.app.whatsthere.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.security.MessageDigest;
 
 import com.app.whatsthere.data.Image;
 import com.app.whatsthere.data.User;
@@ -10,6 +12,7 @@ import com.app.whatsthere.exception.ImageToOldException;
 import com.app.whatsthere.manager.ImageStore;
 import com.app.whatsthere.transformers.MessageTransformer;
 import com.app.whatsthere.transformers.ToJsonTransformer;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,7 +25,7 @@ public class FileUploadController {
 
     private final ImageStore imageStore= new ImageStore();
     private final MessageTransformer<Image> transformer = new ToJsonTransformer();
-
+    private final String imagePath="/root/wt_data/";
 
     /**
      * TODO add get all images for app main screen
@@ -47,10 +50,13 @@ public class FileUploadController {
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
+                String file_Name = imagePath + name + "-uploaded" ;
                 BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                        new BufferedOutputStream(new FileOutputStream(new File( file_Name)));
                 stream.write(bytes);
                 stream.close();
+
+
                 return "Successfully uploaded " + name + " into " + name + "-uploaded !";
             } catch (Exception e) {
                 return "failed to upload " + name + " => " + e.getMessage();
@@ -88,6 +94,14 @@ public class FileUploadController {
         User userToStore = new User();
         return new ResponseEntity<User>(userToStore, HttpStatus.OK);
     }
+//    public String getMd5(String file_name) {
+//        MessageDigest md = MessageDigest.getInstance("MD5");
+//        try (InputStream is = Files.newInputStream(Paths.get("file.txt"))) {
+//            DigestInputStream dis = new DigestInputStream(is, md);
+//  /* Read stream to EOF as normal... */
+//        }
+//        byte[] digest = md.digest();
+//    }
 
 
 
