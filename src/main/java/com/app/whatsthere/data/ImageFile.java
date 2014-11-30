@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 public class ImageFile {
 
     private File file;
-    private final static String IMAGEPATH="/root/wt_data/";
+    private final static String IMAGE_PATH="/root/wt_data/";
     Image image;
 
     public ImageFile(byte[] byteArray,String imageHashTags,LocalDateTime timeOfCapture,
@@ -25,14 +25,14 @@ public class ImageFile {
        try{
       //  String file_Name = imagePath + name + "-uploaded" ;
         BufferedOutputStream stream =
-                new BufferedOutputStream(new FileOutputStream(new File( IMAGEPATH+ timeOfCapture.toString())));
+                new BufferedOutputStream(new FileOutputStream(new File( IMAGE_PATH+ timeOfCapture.toString())));
         stream.write(byteArray);
         stream.close();
 
         //return "Successfully uploaded " + name + " into " + name + "-uploaded !";
 //        FileOutputStream output = new FileOutputStream(new File("target-file.png"));
 //        IOUtils.write(byteArray, output);
-         String url = IMAGEPATH +  timeOfCapture.toString() ;
+         String url = IMAGE_PATH +  timeOfCapture.toString() ;
        // Create an Image
          image = new Image( url , imageHashTags , user , timeOfCapture, location);
 

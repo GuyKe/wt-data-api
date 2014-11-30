@@ -48,12 +48,12 @@ public class FileUploadController {
 //    }
 
     @RequestMapping(value="/image/upload", method=RequestMethod.POST)
-    public @ResponseBody String handleFileUpload(@RequestParam("name") String name,
+    public @ResponseBody String handleFileUpload(@RequestParam("name") String imageHashTags,
                                                  @RequestParam("file") MultipartFile file,
-                                                 @RequestParam("name") String imageHashTags,
-                                                 @RequestParam("name") String timeOfCapture,
-                                                 @RequestParam("name") String user,
-                                                 @RequestParam("name") String location){
+
+                                                 @RequestParam("time") String timeOfCapture,
+                                                 @RequestParam("user") String user,
+                                                 @RequestParam("location") String location){
         if (!file.isEmpty()) {
             try {
                // byte[] bytes =
@@ -62,17 +62,17 @@ public class FileUploadController {
                         LocalDateTime.parse(timeOfCapture),
                          user,
                         //location
-                        new Location(name.substring(name.indexOf("#"),name.lastIndexOf(" ",name.indexOf("#"))),
+                        new Location(imageHashTags.substring(imageHashTags.indexOf("#"),imageHashTags.lastIndexOf(" ",imageHashTags.indexOf("#"))),
                         Double.parseDouble(location.substring(0,location.indexOf(",")) ),
                                 Double.parseDouble(location.substring(location.indexOf(",")))
                         )
                 ) ;
                 return new ToJsonTransformer(imageFile.getImage()).getGson().toString();
             } catch (Exception e) {
-                return "failed to upload " + name + " => " + e.getMessage();
+                return "failed to upload " + imageHashTags + " => " + e.getMessage();
             }
         } else {
-            return "Error: File" + name + "empty";
+            return "Error: File" + imageHashTags + "empty";
         }
 
     }
