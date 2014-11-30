@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 /**
  * Created by guyk on 11/5/14.
  */
@@ -28,6 +29,18 @@ public class Image {
     private String user;
     @Column
     private  LocalDateTime timeOfCapture;
+
+    @Column
+    private Location location;
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
 
     public void setId(int id) {
         this.id = id;
