@@ -7,12 +7,15 @@ import java.io.FileOutputStream;
 import java.security.MessageDigest;
 
 import com.app.whatsthere.data.Image;
+import com.app.whatsthere.data.ImageFile;
+import com.app.whatsthere.data.Location;
 import com.app.whatsthere.data.User;
 import com.app.whatsthere.exception.ImageToOldException;
 import com.app.whatsthere.manager.ImageStore;
 import com.app.whatsthere.transformers.MessageTransformer;
 import com.app.whatsthere.transformers.ToJsonTransformer;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,46 +27,54 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadController {
 
     private final ImageStore imageStore= new ImageStore();
-    private final MessageTransformer<Image> transformer = new ToJsonTransformer();
+    //private final MessageTransformer<Image> transformer = new ToJsonTransformer();
     private final String imagePath="/root/wt_data/";
 
-    /**
-     * TODO add get all images for app main screen
-     * @param data
-     * @return
-     */
-
-    @RequestMapping(value = "/image/store", method = RequestMethod.POST)
-    public ResponseEntity<Image> storeImage(@RequestBody String data) {
-        Image imageToStore = transformer.transform(data);
-        try {
-            imageStore.storeImage(imageToStore);
-        } catch (ImageToOldException e) {
-            e.getImageId();
-        }
-        return new ResponseEntity<Image>(imageToStore, HttpStatus.OK);
-    }
+//    /**
+//     * TODO add get all images for app main screen
+//     * @param data
+//     * @return
+//     */
+//
+//    @RequestMapping(value = "/image/store", method = RequestMethod.POST)
+//    public ResponseEntity<Image> storeImage(@RequestBody String data) {
+//        Image imageToStore = transformer.transform(data);
+//        try {
+//            imageStore.storeImage(imageToStore);
+//        } catch (ImageToOldException e) {
+//            e.getImageId();
+//        }
+//        return new ResponseEntity<Image>(imageToStore, HttpStatus.OK);
+//    }
 
     @RequestMapping(value="/image/upload", method=RequestMethod.POST)
     public @ResponseBody String handleFileUpload(@RequestParam("name") String name,
-                                                 @RequestParam("file") MultipartFile file){
+                                                 @RequestParam("file") MultipartFile file,
+                                                 @RequestParam("name") String imageHashTags,
+                                                 @RequestParam("name") String timeOfCapture,
+                                                 @RequestParam("name") String user,
+                                                 @RequestParam("name") String location){
         if (!file.isEmpty()) {
             try {
-                byte[] bytes = file.getBytes();
-                String file_Name = imagePath + name + "-uploaded" ;
-                BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File( file_Name)));
-                stream.write(bytes);
-                stream.close();
-
-
-                return "Successfully uploaded " + name + " into " + name + "-uploaded !";
+               // byte[] bytes =
+                ImageFile imageFile = new ImageFile(file.getBytes(),
+                        imageHashTags,
+                        LocalDateTime.parse(timeOfCapture),
+                         user,
+                        //location
+                        new Location(name.substring(name.indexOf("#"),name.lastIndexOf(" ",name.indexOf("#"))),
+                        Double.parseDouble(location.substring(0,location.indexOf(",")) ),
+                                Double.parseDouble(location.substring(location.indexOf(",")))
+                        )
+                ) ;
+                return new ToJsonTransformer(imageFile.getImage()).getGson().toString();
             } catch (Exception e) {
                 return "failed to upload " + name + " => " + e.getMessage();
             }
         } else {
-            return "file" + name + "empty";
+            return "Error: File" + name + "empty";
         }
+
     }
 
     @RequestMapping(value = "/image/getImage/tag" ,params = "tag", method = RequestMethod.GET)

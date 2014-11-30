@@ -15,6 +15,14 @@ public class ToJsonTransformer implements MessageTransformer {
         Image image = gson.fromJson(imageData, Image.class);
         return image;
     }
+    public  ToJsonTransformer(Image image) {
+       // return  gson.toJsonTree(image, Image.class);
+     // return new Gson();
+    }
+    public Gson getGson(){
+        return gson;
+    }
+
 
 
 }

@@ -33,6 +33,12 @@ public class Image {
     @Column
     private Location location;
 
+    public Image (String url ,String imageHashTags ,String user ,LocalDateTime timeOfCapture,Location location){
+        this.setUser(user);
+        this.setLocalDateTime(timeOfCapture);
+        this.setUrl(url);
+        this.setLocation(location);
+    }
     public void setLocation(Location location) {
         this.location = location;
     }
