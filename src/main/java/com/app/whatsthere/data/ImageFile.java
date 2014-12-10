@@ -16,32 +16,29 @@ import java.security.NoSuchAlgorithmException;
  */
 public class ImageFile {
 
-    private File file;
-    private final static String IMAGE_PATH="/root/wt_data/";
+
+    private String pathToFile;
+    private final static String IMAGE_PATH="/Users/guyk/tmp/";
+    private final static String IMAGE_SUFFIX = ".jpg";
     Image image;
 
-    public ImageFile(byte[] byteArray,String imageHashTags,LocalDateTime timeOfCapture,
-                     String user,Location location ) throws IOException, NoSuchAlgorithmException {
+    public ImageFile(byte[] byteArray) throws IOException {
        try{
-      //  String file_Name = imagePath + name + "-uploaded" ;
-        BufferedOutputStream stream =
-                new BufferedOutputStream(new FileOutputStream(new File( IMAGE_PATH+ timeOfCapture.toString())));
-        stream.write(byteArray);
-        stream.close();
-
-        //return "Successfully uploaded " + name + " into " + name + "-uploaded !";
-//        FileOutputStream output = new FileOutputStream(new File("target-file.png"));
-//        IOUtils.write(byteArray, output);
-         String url = IMAGE_PATH +  timeOfCapture.toString() ;
-       // Create an Image
-         image = new Image( url , imageHashTags , user , timeOfCapture, location);
-
+            pathToFile =  IMAGE_PATH + LocalDateTime.now().toString() + IMAGE_SUFFIX;
+            BufferedOutputStream stream =
+                new BufferedOutputStream(new FileOutputStream(new File(pathToFile)));
+            stream.write(byteArray);
+            stream.close();
        }catch (IOException e) {
            throw e;
        }
     }
     public Image getImage(){
         return this.image;
+    }
+
+    public String getPath(){
+        return this.pathToFile;
     }
 
 }

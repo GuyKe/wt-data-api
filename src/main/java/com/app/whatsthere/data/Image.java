@@ -22,31 +22,23 @@ public class Image {
     @Column(name = "id")
     private int id;
     @Column
-    private String url;
+    private String fileName;
     @Column
-    private String imageHashTags;
+    private String hashTagText;
     @Column
-    private String user;
+    private String fbToken;
     @Column
-    private  LocalDateTime timeOfCapture;
+    private String formattedLocation;
+    @Column
+    private  String timeOfCapture;
 
-    @Column
-    private Location location;
 
-    public Image (String url ,String imageHashTags ,String user ,LocalDateTime timeOfCapture,Location location){
-        this.setUser(user);
+    public Image (String fileName, String hashTagText ,String fbToken,String formattedLocation,String timeOfCapture){
+        this.fileName = fileName;
+        this.setFormattedLocation(formattedLocation);
         this.setLocalDateTime(timeOfCapture);
-        this.setUrl(url);
-        this.setLocation(location);
+        this.setHashTagText(hashTagText);
     }
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
 
     public void setId(int id) {
         this.id = id;
@@ -56,34 +48,34 @@ public class Image {
         return id;
     }
 
-    public void setLocalDateTime(LocalDateTime timeOfCapture) {
+    public void setLocalDateTime(String timeOfCapture) {
         this.timeOfCapture = timeOfCapture;
     }
-    public LocalDateTime getTimeOfCapture() {
+    public String getTimeOfCapture() {
         return timeOfCapture;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setHashTagText(String url) {
+        this.hashTagText = hashTagText;
     }
 
-    public String getUrl() {
-        return url;
+    public String getHashTagText() {
+        return hashTagText;
     }
 
-    public void setImageHashTags(String imageHashTags) {
-        this.imageHashTags = imageHashTags;
+    public void setFbToken(String fbToken) {
+        this.fbToken = fbToken;
     }
-    public String getImageHashTags() {
-        return imageHashTags;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
+    public String getFbToken() {
+        return fbToken;
     }
 
-    public String getUser() {
-        return user;
+    public void setFormattedLocation(String formattedLocation) {
+        this.formattedLocation = formattedLocation;
+    }
+
+    public String getFormattedLocation() {
+        return formattedLocation;
     }
 
 }

@@ -1,32 +1,29 @@
 package com.app.whatsthere.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.security.MessageDigest;
+import java.io.*;
 
-import com.app.whatsthere.data.Image;
-import com.app.whatsthere.data.ImageFile;
-import com.app.whatsthere.data.Location;
 import com.app.whatsthere.data.User;
 import com.app.whatsthere.exception.ImageToOldException;
 import com.app.whatsthere.manager.ImageStore;
-import com.app.whatsthere.transformers.MessageTransformer;
-import com.app.whatsthere.transformers.ToJsonTransformer;
 
-import org.joda.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.annotation.MultipartConfig;
+
 @Controller
+@MultipartConfig(
+        fileSizeThreshold   = 10,
+        maxFileSize         = 10,
+        maxRequestSize      = 5,
+        location            = "/root/wt_data/")
 @RequestMapping("/data")
 public class FileUploadController {
 
-    private final ImageStore imageStore= new ImageStore();
+    private final ImageStore imageStore = new ImageStore();
     //private final MessageTransformer<Image> transformer = new ToJsonTransformer();
     private final String imagePath="/root/wt_data/";
 
@@ -37,44 +34,39 @@ public class FileUploadController {
 //     */
 //
 //    @RequestMapping(value = "/image/store", method = RequestMethod.POST)
-//    public ResponseEntity<Image> storeImage(@RequestBody String data) {
+//    public ResponseEntity<Image> writeFile(@RequestBody String data) {
 //        Image imageToStore = transformer.transform(data);
 //        try {
-//            imageStore.storeImage(imageToStore);
+//            imageStore.writeFile(imageToStore);
 //        } catch (ImageToOldException e) {
 //            e.getImageId();
 //        }
 //        return new ResponseEntity<Image>(imageToStore, HttpStatus.OK);
 //    }
+/*
 
+("file",file) ("location",formattedLocation) ("name",hashTagText)
+("fbToken",faceBookToken)
+("timeStamp",ts)
+ */
     @RequestMapping(value="/image/upload", method=RequestMethod.POST)
-    public @ResponseBody String handleFileUpload(@RequestParam("name") String imageHashTags,
+    public @ResponseBody String handleFileUpload(@RequestParam("name") String hashTagText,
                                                  @RequestParam("file") MultipartFile file,
-
-                                                 @RequestParam("time") String timeOfCapture,
-                                                 @RequestParam("user") String user,
-                                                 @RequestParam("location") String location){
+                                                 @RequestParam("timeStamp") String timeOfCapture,
+                                                 @RequestParam("fbToken") String fbToken,
+                                                 @RequestParam("location") String formattedLocation){
+        String fileName = "";
         if (!file.isEmpty()) {
             try {
-               // byte[] bytes =
-                ImageFile imageFile = new ImageFile(file.getBytes(),
-                        imageHashTags,
-                        LocalDateTime.parse(timeOfCapture),
-                         user,
-                        //location
-                        new Location(imageHashTags.substring(imageHashTags.indexOf("#"),imageHashTags.lastIndexOf(" ",imageHashTags.indexOf("#"))),
-                        Double.parseDouble(location.substring(0,location.indexOf(",")) ),
-                                Double.parseDouble(location.substring(location.indexOf(",")))
-                        )
-                ) ;
-                return new ToJsonTransformer(imageFile.getImage()).getGson().toString();
-            } catch (Exception e) {
-                return "failed to upload " + imageHashTags + " => " + e.getMessage();
+               fileName =  imageStore.writeFile(file.getBytes());
+            } catch (ImageToOldException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } else {
-            return "Error: File" + imageHashTags + "empty";
+            imageStore.storeImage(fileName,hashTagText,timeOfCapture,fbToken,formattedLocation);
         }
-
+        return "";
     }
 
     @RequestMapping(value = "/image/getImage/tag" ,params = "tag", method = RequestMethod.GET)
